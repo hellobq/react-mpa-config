@@ -24,7 +24,6 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-const customHtmlConfig = require('./custom-html-config.js')
 const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -49,6 +48,9 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
+
+const { getAllEntryConfig, getHtmlWebpackPluginInstances } = require('./util')
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -128,47 +130,36 @@ module.exports = function(webpackEnv) {
     return loaders;
   };
 
-
-  // MPA entries
-  const entry = {}
-  for (let name in paths.entries) {
-    entry[name] = [
-      isEnvDevelopment &&
-      require.resolve('react-dev-utils/webpackHotDevClient'),
-      paths.entries[name]
-    ].filter(Boolean)
-  }
-
-  const htmlWebpackPluginInstances = Object.keys(paths.entries).map((name) => {
-    return new HtmlWebpackPlugin(
-      Object.assign(
-        {},
-        {
-          inject: true,
-          chunks: [name],
-          template: paths.appHtml,
-          filename: name + '.html',
-          ...customHtmlConfig[name]
-        },
-        isEnvProduction
-          ? {
-            minify: {
-              removeComments: true,
-              collapseWhitespace: true,
-              removeRedundantAttributes: true,
-              useShortDoctype: true,
-              removeEmptyAttributes: true,
-              removeStyleLinkTypeAttributes: true,
-              keepClosingSlash: true,
-              minifyJS: true,
-              minifyCSS: true,
-              minifyURLs: true,
-            },
-          }
-          : undefined
-      )
-    )
-  })
+  // const htmlWebpackPluginInstances = Object.keys(paths.entries).map((name) => {
+  //   return new HtmlWebpackPlugin(
+  //     Object.assign(
+  //       {},
+  //       {
+  //         inject: true,
+  //         chunks: [name],
+  //         template: paths.appHtml,
+  //         filename: name + '.html',
+  //         ...customHtmlConfig[name]
+  //       },
+  //       isEnvProduction
+  //         ? {
+  //           minify: {
+  //             removeComments: true,
+  //             collapseWhitespace: true,
+  //             removeRedundantAttributes: true,
+  //             useShortDoctype: true,
+  //             removeEmptyAttributes: true,
+  //             removeStyleLinkTypeAttributes: true,
+  //             keepClosingSlash: true,
+  //             minifyJS: true,
+  //             minifyCSS: true,
+  //             minifyURLs: true,
+  //           },
+  //         }
+  //         : undefined
+  //     )
+  //   )
+  // })
 
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
@@ -201,7 +192,7 @@ module.exports = function(webpackEnv) {
     //   // initialization, it doesn't blow up the WebpackDevServer client, and
     //   // changing JS code would still trigger a refresh.
     // ].filter(Boolean),
-    entry: entry,
+    entry: getAllEntryConfig(isEnvDevelopment),
 
     output: {
       // The build folder.
@@ -624,7 +615,7 @@ module.exports = function(webpackEnv) {
       //       : undefined
       //   )
       // ),
-      ...htmlWebpackPluginInstances,
+      ...getHtmlWebpackPluginInstances(isEnvProduction),
 
 
       // Inlines the webpack runtime script. This script is too small to warrant

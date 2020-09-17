@@ -51,6 +51,13 @@ const resolveModule = (resolveFn, filePath) => {
 
 // MPA config added
 // 获取指定路径下的入口文件
+/**
+ * entries:
+ *  {
+ *    page1: 'C:\\Users\\hellobq\\Desktop\\code\\react-mpa-config-github\\src\\pages\\page1\\index.js',
+ *    ...
+ *  }
+ */
 const glob = require('glob');
 function getEntries(globPath) {
   const files = glob.sync(globPath), entries = {};
