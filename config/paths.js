@@ -56,22 +56,12 @@ function getEntries(globPath) {
   const files = glob.sync(globPath), entries = {};
   files.forEach(filepath => {
     const split = filepath.split('/');
-    const name = split[split.length - 2];
-    entries[name] = resolveModule(resolveApp, filepath);
+    const name = split[split.length - 1];
+    entries[name] = resolveModule(resolveApp, filepath + '\\index');
   });
   return entries;
 }
-const entries = getEntries('src/pages/**/index.js');
-
-function getIndexJs() {
-  const indexNamePaths = {};
-  Object.keys(entries).forEach((name) => {
-    const indexjs = resolveModule(resolveApp, `src/pages/${name}/index`)
-    indexNamePaths[name] = indexjs
-  })
-  return indexNamePaths;
-}
-const indexNamePaths = getIndexJs()
+const entries = getEntries('src/pages/*');
 // MPA config added end
 
 
@@ -84,7 +74,6 @@ module.exports = {
   appHtml: resolveApp('public/index.html'),
 
   // appIndexJs: resolveModule(resolveApp, 'src/index/index'),
-  appIndexJs: indexNamePaths,
   entries,
 
   appPackageJson: resolveApp('package.json'),

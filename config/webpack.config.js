@@ -131,11 +131,11 @@ module.exports = function(webpackEnv) {
 
   // MPA entries
   const entry = {}
-  for (let name in paths.appIndexJs) {
+  for (let name in paths.entries) {
     entry[name] = [
       isEnvDevelopment &&
       require.resolve('react-dev-utils/webpackHotDevClient'),
-      paths.appIndexJs[name]
+      paths.entries[name]
     ].filter(Boolean)
   }
 
