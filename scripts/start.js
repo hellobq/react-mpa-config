@@ -34,6 +34,7 @@ const createDevServerConfig = require('../config/webpackDevServer.config');
 
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
+const { getAllEntryConfig, getHtmlWebpackPluginInstances } = require('../config/util')
 
 // MPA config
 // Warn and crash if required files are missing
@@ -80,7 +81,10 @@ checkBrowsers(paths.appPath, isInteractive)
       return;
     }
 
-    const config = configFactory('development');
+    const entryCfg = getAllEntryConfig(true)
+    const htmlWebpackPluginCfg = getHtmlWebpackPluginInstances(false)
+    const config = configFactory('development', entryCfg, htmlWebpackPluginCfg);
+
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
     const appName = require(paths.appPackageJson).name;
     const useTypeScript = fs.existsSync(paths.appTsConfig);

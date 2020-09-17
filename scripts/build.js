@@ -32,6 +32,8 @@ const measureFileSizesBeforeBuild =
 const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
 const useYarn = fs.existsSync(paths.yarnLockFile);
 
+const { getAllEntryConfig, getHtmlWebpackPluginInstances } = require('../config/util')
+
 // These sizes are pretty large. We'll warn for bundles exceeding them.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
@@ -47,7 +49,9 @@ if (!checkRequiredFiles([
 }
 
 // Generate configuration
-const config = configFactory('production');
+const entryCfg = getAllEntryConfig(false)
+const htmlWebpackPluginCfg = getHtmlWebpackPluginInstances(true)
+const config = configFactory('production', entryCfg, htmlWebpackPluginCfg);
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
@@ -65,7 +69,7 @@ checkBrowsers(paths.appPath, isInteractive)
     // Merge with the public folder
     copyPublicFolder();
     // Start the webpack build
-    return build(previousFileSizes);
+    return build(previousFileSizes, 1, 5);
   })
   .then(
     ({ stats, previousFileSizes, warnings }) => {
@@ -132,7 +136,7 @@ checkBrowsers(paths.appPath, isInteractive)
   });
 
 // Create the production build and print the deployment instructions.
-function build(previousFileSizes) {
+function build(previousFileSizes, nth, count) {
   // We used to support resolving modules according to `NODE_PATH`.
   // This now has been deprecated in favor of jsconfig/tsconfig.json
   // This lets you use absolute paths in imports inside large monorepos:
@@ -145,9 +149,20 @@ function build(previousFileSizes) {
     console.log();
   }
 
-  console.log('Creating an optimized production build...');
+  console.log(`Creating an optimized production build ... ${nth * count}/${htmlWebpackPluginCfg.length}`);
 
-  const compiler = webpack(config);
+  // nth, count
+  const subEntryKeys = Object.keys(entryCfg).slice((nth - 1) * count, nth * count)
+  const subEntry = subEntryKeys.reduce((obj, name) => {
+    obj[name] = entryCfg[name]
+    return obj
+  }, {})
+  const subHtmlWebpackPluginCfg = htmlWebpackPluginCfg.slice((nth - 1) * count, nth * count)
+  const subConfig = configFactory('production', subEntry, subHtmlWebpackPluginCfg)
+  const compiler = webpack(subConfig)
+
+  console.log('before ...', nth, count)
+  console.log('config ...', subEntryKeys)
   return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       let messages;
@@ -197,11 +212,15 @@ function build(previousFileSizes) {
         return reject(new Error(messages.warnings.join('\n\n')));
       }
 
-      return resolve({
-        stats,
-        previousFileSizes,
-        warnings: messages.warnings,
-      });
+      if (nth * count >= htmlWebpackPluginCfg.length) {
+        return resolve({
+          stats,
+          previousFileSizes,
+          warnings: messages.warnings,
+        });
+      } else {
+        return build(previousFileSizes, nth + 1, count);
+      }
     });
   });
 }

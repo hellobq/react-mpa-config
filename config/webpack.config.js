@@ -49,12 +49,9 @@ const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
-
-const { getAllEntryConfig, getHtmlWebpackPluginInstances } = require('./util')
-
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv) {
+module.exports = function(webpackEnv, entryCfg, htmlWebpackPluginCfg) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
@@ -192,7 +189,7 @@ module.exports = function(webpackEnv) {
     //   // initialization, it doesn't blow up the WebpackDevServer client, and
     //   // changing JS code would still trigger a refresh.
     // ].filter(Boolean),
-    entry: getAllEntryConfig(isEnvDevelopment),
+    entry: entryCfg,
 
     output: {
       // The build folder.
@@ -615,7 +612,7 @@ module.exports = function(webpackEnv) {
       //       : undefined
       //   )
       // ),
-      ...getHtmlWebpackPluginInstances(isEnvProduction),
+      ...htmlWebpackPluginCfg,
 
 
       // Inlines the webpack runtime script. This script is too small to warrant

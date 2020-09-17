@@ -3,7 +3,10 @@ const paths = require('./paths')
 const customHtmlConfig = require('./custom-html-config')
 
 
-// 获取所有入口的配置
+/**
+ * 获取所有入口的配置
+ * @param {Boolean} isEnvDevelopment 是否是 dev 环境
+ */
 const getAllEntryConfig = isEnvDevelopment => {
   const entry = {}
 
@@ -19,7 +22,10 @@ const getAllEntryConfig = isEnvDevelopment => {
 }
 
 
-// 获取所有入口对应的 htmlWebpack 配置实例
+/**
+ * 获取所有入口对应的 htmlWebpack 配置实例
+ * @param {Boolean} isEnvProduction 是否是 prod 环境
+ */
 const getHtmlWebpackPluginInstances = isEnvProduction => Object.keys(paths.entries).map(
   name => new HtmlWebpackPlugin(
     Object.assign(
