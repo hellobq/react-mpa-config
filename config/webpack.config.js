@@ -127,37 +127,6 @@ module.exports = function(webpackEnv, entryCfg, htmlWebpackPluginCfg) {
     return loaders;
   };
 
-  // const htmlWebpackPluginInstances = Object.keys(paths.entries).map((name) => {
-  //   return new HtmlWebpackPlugin(
-  //     Object.assign(
-  //       {},
-  //       {
-  //         inject: true,
-  //         chunks: [name],
-  //         template: paths.appHtml,
-  //         filename: name + '.html',
-  //         ...customHtmlConfig[name]
-  //       },
-  //       isEnvProduction
-  //         ? {
-  //           minify: {
-  //             removeComments: true,
-  //             collapseWhitespace: true,
-  //             removeRedundantAttributes: true,
-  //             useShortDoctype: true,
-  //             removeEmptyAttributes: true,
-  //             removeStyleLinkTypeAttributes: true,
-  //             keepClosingSlash: true,
-  //             minifyJS: true,
-  //             minifyCSS: true,
-  //             minifyURLs: true,
-  //           },
-  //         }
-  //         : undefined
-  //     )
-  //   )
-  // })
-
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
@@ -558,60 +527,6 @@ module.exports = function(webpackEnv, entryCfg, htmlWebpackPluginCfg) {
     },
     plugins: [
       // Generates an `index.html` file with the <script> injected.
-      // new HtmlWebpackPlugin(
-      //   Object.assign(
-      //     {},
-      //     {
-      //       inject: true,
-      //       template: paths.appHtml,
-      //       filename: 'index.html',
-      //       chunks: ['index'],
-      //     },
-      //     isEnvProduction
-      //       ? {
-      //           minify: {
-      //             removeComments: true,
-      //             collapseWhitespace: true,
-      //             removeRedundantAttributes: true,
-      //             useShortDoctype: true,
-      //             removeEmptyAttributes: true,
-      //             removeStyleLinkTypeAttributes: true,
-      //             keepClosingSlash: true,
-      //             minifyJS: true,
-      //             minifyCSS: true,
-      //             minifyURLs: true,
-      //           },
-      //         }
-      //       : undefined
-      //   )
-      // ),
-      // new HtmlWebpackPlugin(
-      //   Object.assign(
-      //     {},
-      //     {
-      //       inject: true,
-      //       template: paths.appHtml,
-      //       filename: 'page2.html',
-      //       chunks: ['page2'],
-      //     },
-      //     isEnvProduction
-      //       ? {
-      //           minify: {
-      //             removeComments: true,
-      //             collapseWhitespace: true,
-      //             removeRedundantAttributes: true,
-      //             useShortDoctype: true,
-      //             removeEmptyAttributes: true,
-      //             removeStyleLinkTypeAttributes: true,
-      //             keepClosingSlash: true,
-      //             minifyJS: true,
-      //             minifyCSS: true,
-      //             minifyURLs: true,
-      //           },
-      //         }
-      //       : undefined
-      //   )
-      // ),
       ...htmlWebpackPluginCfg,
 
 

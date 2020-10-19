@@ -161,8 +161,6 @@ function build(previousFileSizes, nth, count) {
   const subConfig = configFactory('production', subEntry, subHtmlWebpackPluginCfg)
   const compiler = webpack(subConfig)
 
-  console.log('before ...', nth, count)
-  console.log('config ...', subEntryKeys)
   return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       let messages;

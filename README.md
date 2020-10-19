@@ -8,6 +8,3 @@
   2. 在 config/custom-html-config.js 内添加该页面对应的模板（也就是上一步的 xx.html）;
   
 注意：custom-html-config.js 内 template 的 key 必须和 src/pages/ 页面名称一致，否则模板不生效。
-
-## todo
-优化：分页打包 src/pages/
